@@ -1,6 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
 
 interface YouTubeAudioPlayerProps {
   page: 'intro' | 'memory' | 'cake' | 'letter';
@@ -13,51 +20,19 @@ export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
   const isReadyRef = useRef(false);
 
   // Define different YouTube videos for each page (using video IDs)
-  const pageVideos = {
-    intro: 'DwuJeGYlYyw', // Replace with actual video IDs
-    memory: 'BddP6PYo2gs',
-    cake: 'I3XkeZ9Slf4',
-    letter: 'hrPHsyGCN1s'
-  };
+  const pageVideos = useMemo(
+    () => ({
+      intro: 'DwuJeGYlYyw', // Replace with actual video IDs
+      memory: 'BddP6PYo2gs',
+      cake: 'I3XkeZ9Slf4',
+      letter: 'hrPHsyGCN1s',
+    }),
+    []
+  );
 
-  useEffect(() => {
-    // Load YouTube IFrame API
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-      window.onYouTubeIframeAPIReady = () => {
-        createPlayer();
-      };
-    } else if (!playerRef.current) {
-      createPlayer();
-    }
-
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (playerRef.current && isReadyRef.current) {
-      const newVideoId = pageVideos[page];
-      if (newVideoId !== currentVideoId) {
-        setCurrentVideoId(newVideoId);
-        playerRef.current.loadVideoById(newVideoId);
-      }
-      if (isPlaying) {
-        playerRef.current.playVideo();
-      }
-    }
-  }, [page, currentVideoId, isPlaying]);
-
-  const createPlayer = () => {
-    playerRef.current = new window.YT.Player('youtube-audio-player', {
+  const createPlayer = useCallback(() => {
+    const win = window as any;
+    playerRef.current = new win.YT.Player('youtube-audio-player', {
       height: '0',
       width: '0',
       videoId: pageVideos[page],
@@ -84,22 +59,61 @@ export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
           event.target.playVideo();
         },
         onStateChange: (event: any) => {
-          if (event.data === window.YT.PlayerState.ENDED) {
+          const win = window as any;
+          if (event.data === win.YT.PlayerState.ENDED) {
             playerRef.current.playVideo();
           }
-          if (event.data === window.YT.PlayerState.PLAYING) {
+          if (event.data === win.YT.PlayerState.PLAYING) {
             setIsPlaying(true);
           } else if (
-            event.data === window.YT.PlayerState.PAUSED ||
-            event.data === window.YT.PlayerState.CUED ||
-            event.data === window.YT.PlayerState.UNSTARTED
+            event.data === win.YT.PlayerState.PAUSED ||
+            event.data === win.YT.PlayerState.CUED ||
+            event.data === win.YT.PlayerState.UNSTARTED
           ) {
             setIsPlaying(false);
           }
         },
       },
     });
-  };
+  }, [pageVideos, page]);
+
+  useEffect(() => {
+    const win = window as any;
+
+    // Load YouTube IFrame API
+    if (!win.YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+      win.onYouTubeIframeAPIReady = () => {
+        createPlayer();
+      };
+    } else if (!playerRef.current) {
+      createPlayer();
+    }
+
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+    };
+  }, [createPlayer]);
+
+  useEffect(() => {
+    if (playerRef.current && isReadyRef.current) {
+      const newVideoId = pageVideos[page];
+      if (newVideoId !== currentVideoId) {
+        setCurrentVideoId(newVideoId);
+        playerRef.current.loadVideoById(newVideoId);
+      }
+      if (isPlaying) {
+        playerRef.current.playVideo();
+      }
+    }
+  }, [page, currentVideoId, isPlaying, pageVideos]);
 
   const togglePlay = () => {
     if (playerRef.current && isReadyRef.current) {
@@ -111,14 +125,6 @@ export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
       setIsPlaying(!isPlaying);
     }
   };
-
-  // Add TypeScript declaration for YouTube API
-  declare global {
-    interface Window {
-      YT: any;
-      onYouTubeIframeAPIReady: () => void;
-    }
-  }
 
   return (
     <>

@@ -250,6 +250,7 @@ const storyLines = [
 ];
 
 const videoSources = [
+  '/media/VID-20250527-WA0021.mp4',
   '/media/14515151151.mp4',
   '/media/154151341351.mp4',
   '/media/161102d774824522a05004e459409f20.mp4',
@@ -431,7 +432,7 @@ export default function MemoryLane({ onNavigate }: MemoryLaneProps) {
                   )}
                   <div className="story-overlay absolute inset-0 bg-pink-600/90 p-4 flex items-center justify-center text-center pointer-events-none opacity-0">
                     <p className="text-white text-xs sm:text-sm italic leading-tight">
-                      "&quot;{card.story}&quot;"
+                      {`"${card.story}"`}
                     </p>
                   </div>
                 </div>

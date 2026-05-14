@@ -143,7 +143,7 @@ export default function CakePage({ onNavigate }: CakePageProps) {
           </button>
           
           <button
-            onClick={detectBlow}
+            onClick={() => detectBlow()}
             disabled={!micActive}
             className="w-full px-6 py-4 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-full font-comic text-lg font-bold mb-6 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
