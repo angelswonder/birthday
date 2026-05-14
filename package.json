@@ -2,6 +2,7 @@
   "name": "birthday",
   "version": "1.0.0",
   "description": "A static interactive birthday website designed with a glowing memory lane, animated story cards, a virtual cake with candle blow detection, and a heartfelt love letter.",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
