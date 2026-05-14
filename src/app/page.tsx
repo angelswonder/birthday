@@ -16,6 +16,12 @@ export default function Home() {
     setCurrentPage('memory');
   };
 
+  const handlePageChange = (page: 'intro' | 'memory' | 'cake' | 'letter') => {
+    setCurrentPage(page);
+    // Reset interaction state when changing pages so user can unmute on each page
+    setUserInteracted(false);
+  };
+
   useEffect(() => {
     if (!userInteracted) {
       const handleInteraction = () => setUserInteracted(true);
@@ -29,11 +35,11 @@ export default function Home() {
       case 'intro':
         return <IntroScreen onStart={handleStart} />;
       case 'memory':
-        return <MemoryLane onNavigate={setCurrentPage} />;
+        return <MemoryLane onNavigate={handlePageChange} />;
       case 'cake':
-        return <CakePage onNavigate={setCurrentPage} />;
+        return <CakePage onNavigate={handlePageChange} />;
       case 'letter':
-        return <LetterPage onNavigate={setCurrentPage} />;
+        return <LetterPage onNavigate={handlePageChange} />;
       default:
         return <IntroScreen onStart={handleStart} />;
     }
