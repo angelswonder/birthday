@@ -387,7 +387,7 @@ export default function MemoryLane({ onNavigate }: MemoryLaneProps) {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#fff5f9] flex flex-col">
+    <div className="h-100dvh w-screen overflow-hidden bg-[#fff5f9] flex flex-col">
       <div
         className="fixed inset-0 opacity-40 z-0 pointer-events-none"
         style={{
@@ -396,8 +396,8 @@ export default function MemoryLane({ onNavigate }: MemoryLaneProps) {
       />
 
       <div className="relative z-10 flex flex-col h-full w-full">
-        <header className="text-center pt-4 sm:pt-8 pb-2 px-4 flex-shrink-0">
-          <h1 className="text-4xl sm:text-7xl font-bold text-pink-600 font-pacifico leading-tight">
+        <header className="text-center pt-2 sm:pt-8 pb-1 px-4 flex-shrink-0">
+          <h1 className="text-2xl sm:text-7xl font-bold text-pink-600 font-pacifico leading-tight">
             Your Memory Lane
           </h1>
           <p className="mt-1 text-purple-600 font-medium italic text-sm sm:text-base">
@@ -449,7 +449,7 @@ export default function MemoryLane({ onNavigate }: MemoryLaneProps) {
           </div>
         </div>
 
-        <footer className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 py-4 sm:py-8 w-full px-6 flex-shrink-0">
+        <footer className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 py-2 sm:py-8 w-full px-6 flex-shrink-0">
           <button
             onClick={() => onNavigate('intro')}
             className="text-pink-400 font-bold hover:text-pink-600 transition-colors text-sm order-2 sm:order-1"
@@ -467,11 +467,10 @@ export default function MemoryLane({ onNavigate }: MemoryLaneProps) {
 
       <style jsx global>{`
         html, body {
-          height: 100%;
+          height: 100dvh;
           width: 100%;
           overflow: hidden;
           margin: 0;
-          position: fixed;
         }
         .horizontal-slider::-webkit-scrollbar {
           height: 6px !important;
