@@ -431,7 +431,7 @@ export default function MemoryLane({ onNavigate }: MemoryLaneProps) {
                   )}
                   <div className="story-overlay absolute inset-0 bg-pink-600/90 p-4 flex items-center justify-center text-center pointer-events-none opacity-0">
                     <p className="text-white text-xs sm:text-sm italic leading-tight">
-                      "{card.story}"
+                      "&quot;{card.story}&quot;"
                     </p>
                   </div>
                 </div>

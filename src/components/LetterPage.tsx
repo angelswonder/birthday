@@ -73,7 +73,7 @@ export default function LetterPage({ onNavigate }: LetterPageProps) {
             </p>
             
             <p>
-              You are the reason I believe in magic. Your smile brightens even the darkest days, and your presence makes my heart feel like it's dancing. Thank you for being you, for loving me, and for making life feel like a beautiful adventure.
+              You are the reason I believe in magic. Your smile brightens even the darkest days, and your presence makes my heart feel like it&apos;s dancing. Thank you for being you, for loving me, and for making life feel like a beautiful adventure.
             </p>
             
             <div className="pt-4">
