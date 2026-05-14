@@ -34,7 +34,8 @@ export default function YouTubeAudioPlayer({ page, userInteracted }: YouTubeAudi
 
   const createPlayer = useCallback(() => {
     const win = window as any;
-    playerRef.current = new win.YT.Player('youtube-audio-player', {
+    const player = new win.YT.Player('youtube-audio-player', {
+      host: 'https://www.youtube.com',
       height: '0',
       width: '0',
       videoId: pageVideos[page],
@@ -52,11 +53,13 @@ export default function YouTubeAudioPlayer({ page, userInteracted }: YouTubeAudi
         showinfo: 0,
         start: 0,
         mute: 1, // Must be muted for autoplay to work on production sites
+        origin: window.location.origin,
       },
       events: {
         onReady: (event: any) => {
           isReadyRef.current = true;
           setCurrentVideoId(pageVideos[page]);
+          playerRef.current = event.target;
           // Don't set volume when muted, let user control it
           event.target.playVideo();
         },
@@ -77,6 +80,7 @@ export default function YouTubeAudioPlayer({ page, userInteracted }: YouTubeAudi
         },
       },
     });
+    playerRef.current = player;
   }, [pageVideos, page]);
 
   useEffect(() => {
@@ -109,9 +113,13 @@ export default function YouTubeAudioPlayer({ page, userInteracted }: YouTubeAudi
       const newVideoId = pageVideos[page];
       if (newVideoId !== currentVideoId) {
         setCurrentVideoId(newVideoId);
-        playerRef.current.loadVideoById(newVideoId);
+        if (typeof playerRef.current.loadVideoById === 'function') {
+          playerRef.current.loadVideoById(newVideoId);
+        } else if (typeof playerRef.current.cueVideoById === 'function') {
+          playerRef.current.cueVideoById(newVideoId);
+        }
       }
-      if (isPlaying) {
+      if (isPlaying && typeof playerRef.current.playVideo === 'function') {
         playerRef.current.playVideo();
       }
     }
