@@ -15,6 +15,7 @@ interface YouTubeAudioPlayerProps {
 
 export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Start muted for autoplay
   const [currentVideoId, setCurrentVideoId] = useState<string | null>(null);
   const playerRef = useRef<any>(null);
   const isReadyRef = useRef(false);
@@ -49,13 +50,13 @@ export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
         rel: 0,
         showinfo: 0,
         start: 0,
-        mute: 0,
+        mute: 1, // Must be muted for autoplay to work on production sites
       },
       events: {
         onReady: (event: any) => {
           isReadyRef.current = true;
           setCurrentVideoId(pageVideos[page]);
-          event.target.setVolume(70);
+          // Don't set volume when muted, let user control it
           event.target.playVideo();
         },
         onStateChange: (event: any) => {
@@ -126,19 +127,43 @@ export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
     }
   };
 
+  const toggleMute = () => {
+    if (playerRef.current && isReadyRef.current) {
+      if (isMuted) {
+        playerRef.current.unMute();
+        playerRef.current.setVolume(70);
+      } else {
+        playerRef.current.mute();
+      }
+      setIsMuted(!isMuted);
+    }
+  };
+
   return (
     <>
       {/* Hidden YouTube player */}
       <div id="youtube-audio-player" style={{ display: 'none' }} />
 
-      {/* Floating play/pause button */}
-      <button
-        onClick={togglePlay}
-        className="fixed bottom-4 left-4 z-50 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
-        title={isPlaying ? 'Pause Background Music' : 'Play Background Music'}
-      >
-        {isPlaying ? '⏸️' : '▶️'}
-      </button>
+      {/* Floating control buttons */}
+      <div className="fixed bottom-4 left-4 z-50 flex gap-2">
+        {/* Play/Pause button */}
+        <button
+          onClick={togglePlay}
+          className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
+          title={isPlaying ? 'Pause Background Music' : 'Play Background Music'}
+        >
+          {isPlaying ? '⏸️' : '▶️'}
+        </button>
+
+        {/* Mute/Unmute button */}
+        <button
+          onClick={toggleMute}
+          className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
+          title={isMuted ? 'Unmute Background Music' : 'Mute Background Music'}
+        >
+          {isMuted ? '🔇' : '🔊'}
+        </button>
+      </div>
     </>
   );
 }
