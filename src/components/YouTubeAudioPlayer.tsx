@@ -11,9 +11,10 @@ declare global {
 
 interface YouTubeAudioPlayerProps {
   page: 'intro' | 'memory' | 'cake' | 'letter';
+  userInteracted: boolean;
 }
 
-export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
+export default function YouTubeAudioPlayer({ page, userInteracted }: YouTubeAudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true); // Start muted for autoplay
   const [currentVideoId, setCurrentVideoId] = useState<string | null>(null);
@@ -115,6 +116,14 @@ export default function YouTubeAudioPlayer({ page }: YouTubeAudioPlayerProps) {
       }
     }
   }, [page, currentVideoId, isPlaying, pageVideos]);
+
+  useEffect(() => {
+    if (playerRef.current && isReadyRef.current && userInteracted && isMuted) {
+      playerRef.current.unMute();
+      playerRef.current.setVolume(70);
+      setIsMuted(false);
+    }
+  }, [userInteracted, isMuted]);
 
   const togglePlay = () => {
     if (playerRef.current && isReadyRef.current) {

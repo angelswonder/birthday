@@ -9,10 +9,20 @@ import YouTubeAudioPlayer from '@/components/YouTubeAudioPlayer';
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<'intro' | 'memory' | 'cake' | 'letter'>('intro');
+  const [userInteracted, setUserInteracted] = useState(false);
 
   const handleStart = () => {
+    setUserInteracted(true);
     setCurrentPage('memory');
   };
+
+  useEffect(() => {
+    if (!userInteracted) {
+      const handleInteraction = () => setUserInteracted(true);
+      document.addEventListener('pointerdown', handleInteraction, { once: true });
+      return () => document.removeEventListener('pointerdown', handleInteraction);
+    }
+  }, [userInteracted]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -31,7 +41,7 @@ export default function Home() {
 
   return (
     <div className="relative">
-      <YouTubeAudioPlayer page={currentPage} />
+      <YouTubeAudioPlayer page={currentPage} userInteracted={userInteracted} />
       {renderPage()}
     </div>
   );
